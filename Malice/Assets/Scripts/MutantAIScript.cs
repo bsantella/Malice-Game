@@ -8,6 +8,7 @@ public class MutantAIScript : MonoBehaviour
 {
     public NavMeshAgent navMeshAgent;               //  Nav mesh agent component
     public GameObject stalker;
+    public GameObject bullet;
     public float startWaitTime = 4;                 //  Wait time of every action
     public float timeToRotate = 2;                  //  Wait time when the enemy detect near the player without seeing
     public float speedWalk = 6;                     //  Walking speed, speed in the nav mesh agent
@@ -27,6 +28,10 @@ public class MutantAIScript : MonoBehaviour
  
     Vector3 playerLastPosition = Vector3.zero;      //  Last position of the player when was near the enemy
     Vector3 m_PlayerPosition;                       //  Last position of the player when the player is seen by the enemy
+
+    public float bullRadius = 10;
+    public float bullAngle = 360;
+    public LayerMask bulletMask;
  
     float m_WaitTime;                               //  Variable of the wait time that makes the delay
     float m_TimeToRotate;                           //  Variable of the wait time to rotate when the player is near that makes the delay
@@ -35,12 +40,17 @@ public class MutantAIScript : MonoBehaviour
     bool m_IsPatrol;                                //  If the enemy is patrol, state of patroling
     bool m_CaughtPlayer;                            //  if the enemy has caught the player
 
+    //Bullet collision variables
+    bool bullHit;
+    public float m_hitTime = 3;                            //  Variable of the stun time
+
     [SerializeField] private Animator anim;
     [SerializeField] private CurrentState m_CurrentState;
  
     void Start()
     {
         m_PlayerPosition = Vector3.zero;
+        bullHit = false;
         m_IsPatrol = true;
         m_CaughtPlayer = false;
         m_playerInRange = false;
@@ -60,6 +70,7 @@ public class MutantAIScript : MonoBehaviour
     {
         EnviromentView();                           //  Check whether or not the player is in the enemy's field of vision
         AnimationChecker();
+        //checkBulletColl(bullet);
 
         if (!m_IsPatrol)
         {
@@ -68,6 +79,23 @@ public class MutantAIScript : MonoBehaviour
         else
         {
             Patrolling();
+        }
+
+        if (bullHit)
+        {
+            
+            if (m_hitTime <= 0)
+            {
+                Move(speedWalk);
+                navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
+                m_hitTime = 3;
+                bullHit = false;
+            }
+            else
+            {
+                Stop();
+                m_hitTime -= Time.deltaTime;
+            }
         }
 
         if (Vector3.Distance(transform.position, GameObject.FindGameObjectWithTag("Player").transform.position) < 1.1)
@@ -198,7 +226,24 @@ public class MutantAIScript : MonoBehaviour
     //     yield return new WaitForSeconds(0.2f);
     //     isAttacking = false;
     // }
- 
+
+
+    //void checkBulletColl(GameObject obj)
+    //{
+    //    SphereCollider objCollider = obj.GetComponent<SphereCollider>();
+    //    Collider[] touching = Physics.OverlapSphere(objCollider.bounds.center, objCollider.radius);
+    //
+    //   foreach (Collider touch in touching)
+    //    {
+    //        if (touch.gameObject == obj && touch.gameObject == stalker)
+    //        {
+    //            Debug.Log("Hit!");
+    //            Destroy(obj);
+    //            bullHit = true;
+    //        }
+    //    }
+    //}
+
     public void NextPoint()
     {
         m_CurrentWaypointIndex = (m_CurrentWaypointIndex + 1) % waypoints.Length;
@@ -253,6 +298,7 @@ public class MutantAIScript : MonoBehaviour
             }
         }
     }
+
  
     void EnviromentView()
     {
@@ -292,6 +338,19 @@ public class MutantAIScript : MonoBehaviour
                  *  If the enemy no longer sees the player, then the enemy will go to the last position that has been registered
                  * */
                 m_PlayerPosition = player.transform.position;       //  Save the player's current position if the player is in range of vision
+            }
+        }
+
+        Collider[] bulletInRange = Physics.OverlapSphere(transform.position, bullRadius, bulletMask);
+        for (int i = 0; i < bulletInRange.Length; i++)
+        {
+            Transform bullVar = bulletInRange[i].transform;
+            Vector3 dirToBullet = (bullVar.position - transform.position).normalized;
+            float dstToBullet = Vector3.Distance(transform.position, bullVar.position);
+
+            if(!Physics.Raycast(transform.position, dirToBullet, dstToBullet, bulletMask))
+            {
+                bullHit = true;
             }
         }
     }

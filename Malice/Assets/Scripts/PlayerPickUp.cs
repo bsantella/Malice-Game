@@ -12,6 +12,7 @@ public class PlayerPickUp : MonoBehaviour
     [SerializeField] GameObject interactUI;
     [SerializeField] [Min(1)] private float pickUpRange = 3;
     [SerializeField] ShowHide showHide;
+    [SerializeField] Gun_ShowHide GunShowHide;
     [SerializeField] KeyBehavior keyBehavior;
 
     private RaycastHit hit;
@@ -52,7 +53,13 @@ public class PlayerPickUp : MonoBehaviour
 
         }
         else if (tag == "LevelOneKey")
+        {
             keyBehavior.hasLevelOnekey = true;
+        }
+        else if (tag == "Gun")
+        {
+            GunShowHide.hasGun = true;
+        }
 
     }
 

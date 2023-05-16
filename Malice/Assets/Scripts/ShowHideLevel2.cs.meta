@@ -3,7 +3,13 @@ guid: 34757977ba255d04facbbc3237ab51eb
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - GunInHand: {instanceID: 0}
+  - FlashlightInHand: {instanceID: 0}
+  - SpotLight: {instanceID: 0}
+  - flashlightUI: {instanceID: 0}
+  - ArmRigLayer: {instanceID: 0}
+  - FingerRigLayer: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

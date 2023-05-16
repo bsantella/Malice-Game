@@ -13,14 +13,15 @@ public class ShowHide : MonoBehaviour
     public Rig ArmRigLayer;
     public Rig FingerRigLayer;
 
-    bool done = false; // used to stop updating
+    bool doneFlash = false; // used to stop updating
     bool spotlightBool = false;
+
     // Update is called once per frame
     void Update()
     {
-        if (!done)
+        if (!doneFlash)
         {
-            if(hasFlashLight)
+            if (hasFlashLight)
             {
                 spotlightBool = !spotlightBool;
                 FlashlightInHand.SetActive(true);
@@ -29,7 +30,7 @@ public class ShowHide : MonoBehaviour
                 ArmRigLayer.weight = 1;
                 FingerRigLayer.weight = 1;
                 flashlightUI.SetActive(true);
-                done = true;
+                doneFlash = true;
             }
             else
             {
@@ -38,6 +39,8 @@ public class ShowHide : MonoBehaviour
                 ArmRigLayer.weight = 0;
                 FingerRigLayer.weight = 0;
             }
+
+            
         }
 
         if(hasFlashLight && Input.GetKeyDown(KeyCode.Q))
