@@ -14,6 +14,8 @@ public class Gun_ShowHide : MonoBehaviour
     public bool hasGun = false;
     bool gunBool = false;
     private bool done = false;
+    private float shootCooldown = .2f;
+
     // Update is called once per frame
     void Update()
     {
@@ -32,12 +34,18 @@ public class Gun_ShowHide : MonoBehaviour
             }
         }
 
-        if (hasGun && Input.GetKeyDown(KeyCode.Mouse0))
+        shootCooldown -= Time.deltaTime;
+        //if (hasGun && Input.GetKeyDown(KeyCode.Mouse0))
+        if (hasGun && Input.GetMouseButton(0))
         {
-            gunBool = !gunBool;
-            GameObject BulletObject = Instantiate(BulletPrefab);
-            BulletObject.transform.position = playerCam.transform.position + playerCam.transform.forward;
-            BulletObject.transform.forward = playerCam.transform.forward;
+            if (shootCooldown <= 0f)
+            {
+                gunBool = !gunBool;
+                GameObject BulletObject = Instantiate(BulletPrefab);
+                BulletObject.transform.position = playerCam.transform.position + playerCam.transform.forward;
+                BulletObject.transform.forward = playerCam.transform.forward;
+                shootCooldown = .2f;
+            }
         }
 
     }
